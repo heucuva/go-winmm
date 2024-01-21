@@ -1,17 +1,19 @@
+//go:build windows
 // +build windows
 
 package winmm
 
 import (
+	"errors"
+	"fmt"
 	"unsafe"
 
-	"github.com/pkg/errors"
 	"golang.org/x/sys/windows"
 )
 
 var (
 	// ErrWinMM is for tagging Windows Multimedia errors appropriately
-	ErrWinMM = errors.New("WinMM error")
+	ErrWinMM = errors.New("winmm error")
 )
 
 var (
@@ -72,7 +74,7 @@ func New(channels int, samplesPerSec int, bitsPerSample int) (*WaveOut, error) {
 		uintptr(0),                         // dwInstance
 		uintptr(0))                         // fdwOpen
 	if result != 0 { // MMSYSERR_NOERROR
-		return nil, errors.Wrapf(ErrWinMM, "result %d", result)
+		return nil, fmt.Errorf("%w: waveOutOpen returned %d", ErrWinMM, result)
 	}
 
 	return &w, nil
